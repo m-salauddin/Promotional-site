@@ -6,14 +6,13 @@ import { getFirestore, collection, addDoc, doc, updateDoc, deleteDoc, query, ord
 // --- CONFIGURATION ---
 // ⚠️ এখানে আপনার আগের Firebase Config পেস্ট করুন
 const firebaseConfig = {
-    apiKey: " App Key",
-    authDomain: "Auth Domain",
-    databaseURL: "database url",
-    projectId: "project id ",
-    storageBucket: "  ",
-    messagingSenderId: "   ",
-    appId: " ",
-    measurementId: "  "
+  apiKey: "AIzaSyAwlZ-01TJA9sLZ30bjCLEiCGHekL8_25k",
+  authDomain: "rabby-pomo-site.firebaseapp.com",
+  projectId: "rabby-pomo-site",
+  storageBucket: "rabby-pomo-site.firebasestorage.app",
+  messagingSenderId: "568222053838",
+  appId: "1:568222053838:web:f7f99677d43471c435279f",
+  measurementId: "G-V1MSW4PP06"
   };
 
 const app = initializeApp(firebaseConfig);
