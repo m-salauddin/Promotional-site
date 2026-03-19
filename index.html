@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkHub </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#6366f1', // Indigo
+                        accent: '#a855f7', // Purple
+                        darkBg: '#0f172a',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                        glassBorder: 'rgba(255, 255, 255, 0.1)',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'blob': 'blob 7s infinite',
+                        'fade-up': 'fadeUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Animated Background Blobs */
+        .bg-gradient-mesh {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            overflow: hidden; background: #0f172a;
+        }
+        .light .bg-gradient-mesh { background: #f8fafc; }
+        
+        .blob {
+            position: absolute; filter: blur(70px); opacity: 0.4;
+            animation: blob 10s infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-100 transition-colors duration-300 min-h-screen flex flex-col font-sans">
+
+    <div class="bg-gradient-mesh">
+        <div class="blob bg-purple-500 w-96 h-96 rounded-full top-0 left-0 mix-blend-multiply dark:mix-blend-lighten"></div>
+        <div class="blob bg-blue-500 w-96 h-96 rounded-full bottom-0 right-0 animation-delay-2000 mix-blend-multiply dark:mix-blend-lighten"></div>
+        <div class="blob bg-pink-500 w-80 h-80 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animation-delay-4000 mix-blend-multiply dark:mix-blend-lighten"></div>
+    </div>
+
+    <header class="sticky top-0 z-50 glass-panel border-b border-white/10 shadow-lg">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.location.href='/'">
+                <div class="w-10 h-10 bg-gradient-to-tr from-brand to-accent rounded-lg flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-link text-white text-xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 tracking-wider">LinkHub</h1>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button id="themeToggle" class="w-10 h-10 rounded-full glass-panel flex items-center justify-center hover:bg-white/10 transition text-yellow-400">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button id="logoutBtn" class="hidden px-5 py-2 rounded-full bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500 hover:text-white transition-all text-sm font-medium shadow-lg hover:shadow-red-500/30">
+                    Logout <i class="fas fa-sign-out-alt ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-6 relative z-10">
+        
+        <div id="loader" class="fixed inset-0 bg-darkBg/90 z-[100] flex flex-col justify-center items-center hidden backdrop-blur-sm">
+            <div class="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
+            <p class="mt-4 text-brand font-mono animate-pulse">Initializing System...</p>
+        </div>
+
+        <section id="loginSection" class="hidden min-h-[60vh] flex items-center justify-center">
+            <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-md animate-fade-up">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-gradient-to-r from-brand to-accent rounded-full mx-auto flex items-center justify-center mb-4 shadow-lg shadow-brand/50">
+                        <i class="fas fa-user-shield text-2xl text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white dark:text-white light:text-gray-800">Admin Portal</h2>
+                    <p class="text-gray-400 mt-2 text-sm">Secure access required</p>
+                </div>
+                <form id="loginForm" class="space-y-5">
+                    <div class="relative group">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand transition"></i>
+                        <input type="email" id="email" placeholder="Email Address" class="w-full pl-12 pr-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-brand focus:ring-1 focus:ring-brand outline-none text-white transition placeholder-gray-500" required>
+                    </div>
+                    <div class="relative group">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand transition"></i>
+                        <input type="password" id="password" placeholder="Password" class="w-full pl-12 pr-4 py-3 rounded-xl bg-black/20 border border-white/10 focus:border-brand focus:ring-1 focus:ring-brand outline-none text-white transition placeholder-gray-500" required>
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-brand to-accent text-white py-3.5 rounded-xl font-bold shadow-lg shadow-brand/30 hover:shadow-brand/50 hover:scale-[1.02] transition-all duration-300">
+                        Access Dashboard
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section id="adminDashboard" class="hidden space-y-10 animate-fade-up">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-gradient-to-r from-brand/10 to-transparent p-6 rounded-2xl border border-brand/20">
+                <div>
+                    <h2 class="text-3xl font-bold text-white light:text-gray-800">Dashboard Overview</h2>
+                    <p class="text-gray-400 text-sm mt-1">Manage your digital presence</p>
+                </div>
+                <button onclick="openModal('createPageModal')" class="bg-white text-brand px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-xl hover:bg-gray-100 transition flex items-center gap-2 transform hover:-translate-y-1">
+                    <i class="fas fa-plus-circle"></i> Create New Page
+                </button>
+            </div>
+            
+            <div id="pagesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+        </section>
+
+        <section id="pageView" class="hidden max-w-2xl mx-auto py-10 animate-fade-up">
+            <div class="text-center mb-12 relative">
+                <div id="pageAdminControls" class="hidden absolute -top-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur rounded-full px-4 py-2 flex gap-3 border border-white/20 shadow-2xl z-20">
+                    <button id="editTitleBtn" class="text-yellow-400 hover:text-yellow-300 px-2" title="Edit Title"><i class="fas fa-pen"></i></button>
+                    <button onclick="openModal('addCardModal')" class="text-green-400 hover:text-green-300 px-2" title="Add Card"><i class="fas fa-plus"></i></button>
+                    <button id="shareBtn" class="text-purple-400 hover:text-purple-300 px-2" title="Copy Link"><i class="fas fa-share-alt"></i></button>
+                    <button id="backToDash" class="text-gray-400 hover:text-white px-2" title="Home"><i class="fas fa-home"></i></button>
+                </div>
+
+                <div class="inline-block p-1 rounded-full bg-gradient-to-tr from-brand to-accent mb-4">
+                    <img id="pageProfileImg" src="https://ui-avatars.com/api/?name=L&background=0D8ABC&color=fff" class="w-24 h-24 rounded-full border-4 border-darkBg object-cover shadow-2xl">
+                </div>
+                <h1 id="pageTitle" class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-3 drop-shadow-lg">Loading...</h1>
+                <p class="text-gray-400 text-sm tracking-widest uppercase">Verified Links</p>
+            </div>
+
+            <div id="cardsContainer" class="space-y-5 px-4">
+                </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-auto glass-panel border-t border-white/5 py-8">
+        <div class="container mx-auto text-center">
+            <div class="flex justify-center gap-6 mb-4">
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand hover:scale-110 transition"><i class="fab fa-facebook-f text-white"></i></a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand hover:scale-110 transition"><i class="fab fa-twitter text-white"></i></a>
+                <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-brand hover:scale-110 transition"><i class="fab fa-instagram text-white"></i></a>
+            </div>
+            <p class="text-gray-500 text-sm">© 2026 LinkHub. Crafted with <i class="fas fa-heart text-red-500 animate-pulse"></i> by Expert Dev</p>
+        </div>
+    </footer>
+
+    <div id="createPageModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[80] flex items-center justify-center p-4">
+        <div class="glass-panel bg-darkBg p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl transform scale-100 transition-all">
+            <h3 class="text-2xl font-bold text-white mb-6">Create Page</h3>
+            <input type="text" id="newPageName" placeholder="Page Name (e.g. My Portfolio)" class="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none mb-6">
+            <div class="flex justify-end gap-3">
+                <button onclick="closeModal('createPageModal')" class="px-5 py-2 rounded-lg text-gray-400 hover:text-white transition">Cancel</button>
+                <button id="savePageBtn" class="px-6 py-2 bg-brand hover:bg-indigo-500 text-white rounded-lg font-bold shadow-lg transition">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addCardModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[80] flex items-center justify-center p-4">
+        <div class="glass-panel bg-darkBg p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-xl font-bold text-white mb-6">Add Link Card</h3>
+            <div class="space-y-4">
+                <input type="text" id="cardTitle" placeholder="Title" class="modal-input w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+                <input type="url" id="cardImage" placeholder="Image URL (Drive Link OK)" class="modal-input w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+                <input type="url" id="cardLink" placeholder="Destination URL" class="modal-input w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+            </div>
+            <div class="flex justify-end gap-3 mt-8">
+                <button onclick="closeModal('addCardModal')" class="px-5 py-2 rounded-lg text-gray-400 hover:text-white transition">Cancel</button>
+                <button id="saveCardBtn" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold shadow-lg transition">Add Card</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editCardModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[80] flex items-center justify-center p-4">
+        <div class="glass-panel bg-darkBg p-8 rounded-2xl w-full max-w-md border border-white/10 shadow-2xl">
+            <h3 class="text-xl font-bold text-white mb-6">Edit Link Card</h3>
+            <input type="hidden" id="editCardId">
+            <div class="space-y-4">
+                <input type="text" id="editCardTitle" placeholder="Title" class="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+                <input type="url" id="editCardImage" placeholder="Image URL" class="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+                <input type="url" id="editCardLink" placeholder="Destination URL" class="w-full p-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-brand outline-none">
+            </div>
+            <div class="flex justify-end gap-3 mt-8">
+                <button onclick="closeModal('editCardModal')" class="px-5 py-2 rounded-lg text-gray-400 hover:text-white transition">Cancel</button>
+                <button id="updateCardBtn" class="px-6 py-2 bg-brand hover:bg-indigo-500 text-white rounded-lg font-bold shadow-lg transition">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
